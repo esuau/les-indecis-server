@@ -5,8 +5,8 @@ Prototype for the final year project of Information Systems Engineering - École
 
 Build docker image with :
 
-̀docker build -t pds-server .`
+`sudo docker build -t pds-server .`
 
 Run docker image with :
 
-`docker run -P pds-server`
+`sudo docker run -P pds-server`

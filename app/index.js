@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/get_notifications', (req, res) => {
-	pool.query(“SELECT NOW()”, (err, res) => {
+	pool.query("SELECT * FROM notification;", (err, res) => {
 		console.log(res);
 		pool.end();
 	});

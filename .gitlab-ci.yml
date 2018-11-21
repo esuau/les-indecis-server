@@ -1,16 +1,29 @@
 stages:
+  - fetch
   - kill
   - build
   - deploy
 
+job fetch_code:
+  stage: fetch
+  script:
+    - ssh root@back-1 'cd /opt/app/les-indecis-server ; git pull ;'
+    - ssh root@back-2 'cd /opt/app/les-indecis-server ; git pull ;'
+
 job kill_old:
   stage: kill
-  script: p=$(docker ps | grep pds-server | cut -d" " -f1);docker kill $p || exit 0 ;
+  script: 
+    - ssh root@back-1 'p=$(docker ps | grep pds-server | cut -d" " -f1);docker kill $p || exit 0 ;'
+    - ssh root@back-2 'p=$(docker ps | grep pds-server | cut -d" " -f1);docker kill $p || exit 0 ;'
 
 job build_new:
   stage: build
-  script: docker build -t pds-server .
+  script: 
+    - ssh root@back-1 'docker build -t pds-server .'
+    - ssh root@back-2 'docker build -t pds-server .'
 
 job deploy_new:
   stage: deploy
-  script: docker run -d -p 80:80 pds-server
+  script: 
+    - ssh root@back-1 'docker run -d -p 80:80 pds-server'
+    - ssh root@back-2 'docker run -d -p 80:80 pds-server'

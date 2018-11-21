@@ -1,0 +1,8 @@
+before_script:
+   - docker info
+
+ build_image:
+   script:
+     -  p=$(sudo docker ps | grep pds-server | cut -d" " -f1);sudo docker kill $p ;
+     - docker build -t pds-server .
+     - docker run -d -p 80:80 pds-server

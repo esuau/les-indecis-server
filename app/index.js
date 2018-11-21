@@ -2,11 +2,11 @@ const express = require('express');
 const morgan = require('morgan');
 const pg = require('pg');
 const pool = new pg.Pool({
-user: ‘postgres’,
-host: ‘bdd-vip.undefined.inside.esiag.info’,
-database: ‘pds’,
-password: ‘undefined’,
-port: ‘5432’});
+user: 'postgres',
+host: 'bdd-vip.undefined.inside.esiag.info',
+database: 'pds',
+password: 'undefined',
+port: '5432'});
 
 const app = express();
 app.use(morgan('combined'));

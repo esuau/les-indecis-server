@@ -1,8 +1,16 @@
-before_script:
-   - docker info
+stages:
+  - kill
+  - build
+  - deploy
 
- build_image:
-   script:
-     -  p=$(sudo docker ps | grep pds-server | cut -d" " -f1);sudo docker kill $p ;
-     - docker build -t pds-server .
-     - docker run -d -p 80:80 pds-server
+job kill_old:
+  stage: kill
+  script: p=$(sudo docker ps | grep pds-server | cut -d" " -f1);sudo docker kill $p ;
+
+job build_new:
+  stage: build
+  script: docker build -t pds-server .
+
+job deploy_new:
+  stage: deploy
+  script: docker run -d -p 80:80 pds-server

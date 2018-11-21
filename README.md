@@ -9,4 +9,4 @@ Build docker image with :
 
 Run docker image with :
 
-`sudo docker run -P pds-server`
+`sudo docker run -d -p 80:80 pds-server`

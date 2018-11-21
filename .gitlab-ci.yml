@@ -5,7 +5,7 @@ stages:
 
 job kill_old:
   stage: kill
-  script: p=$(sudo docker ps | grep pds-server | cut -d" " -f1);sudo docker kill $p ;
+  script: p=$(docker ps | grep pds-server | cut -d" " -f1);docker kill $p ;
 
 job build_new:
   stage: build

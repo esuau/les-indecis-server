@@ -21,7 +21,6 @@ app.get('/get_notifications', (req, res) => {
 		else 
 		{
 			res.send(r.rows);
-			pool.end();
 		}
 	});
 });
@@ -39,10 +38,8 @@ app.post('/add_notification', (req, res, next) => {
 				if(err) { res.send("Error while adding notification in DB : " + err); }
 				else {
 					res.send("Notification ajoutée avec succés !");
-					pool.end();
 				}
 			});
-			pool.end
 		}
 	});
 
@@ -50,4 +47,16 @@ app.post('/add_notification', (req, res, next) => {
 
 var listener = app.listen(process.env.PORT || 80, function() {
  console.log('listening on port ' + listener.address().port);
+});
+
+process.once('SIGINT', function (code) {
+    console.log('SIGINT received terminating pgdb connection');
+	pool.close();
+});
+
+ // vs.
+
+process.once('SIGTERM', function (code) {
+	console.log('SIGTERM received terminating pgdb connection');
+    pool.close();
 });

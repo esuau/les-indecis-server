@@ -17,12 +17,36 @@ app.get('/', (req, res) => {
 
 app.get('/get_notifications', (req, res) => {
 	pool.query("SELECT * FROM notification;", (err, r) => {
-		res.send(r);
-		pool.end();
+		if(err) {res.send("Error while reading notifications from DB : " + err); }
+		else 
+		{
+			res.send(r.rows);
+			pool.end();
+		}
 	});
 });
 
+// Url shortening, POST /shorten
+app.post('/add_notification', (req, res, next) {
+	var msg = decodeURIComponent(req.body.msg) ;
+	var planned_at = decodeURIComponent(req.body.planned) ;
+	pool.query("SELECT MAX(ID) AS mid FROM notification;", (err, r) => {
+		if(err) { res.send("Error while reading id from DB : " + err); }
+		else 
+		{
+			var id = r.rows[0].mid + 1 ;
+			pool.query("INSERT INTO notification VALUE (" + id + ", '" + msg + "', NOW(), '"+planned_at+"') ;", (err, r) => {
+				if(err) { res.send("Error while adding notification in DB : " + err); }
+				else {
+					res.send("Notification ajoutée avec succés !");
+					pool.end();
+				}
+			});
+			pool.end
+		}
+	});
 
+});
 
 var listener = app.listen(process.env.PORT || 80, function() {
  console.log('listening on port ' + listener.address().port);

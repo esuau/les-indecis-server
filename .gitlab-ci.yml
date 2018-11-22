@@ -1,14 +1,7 @@
 stages:
-  - fetch
   - kill
   - build
   - deploy
-
-job fetch_code:
-  stage: fetch
-  script:
-    - ssh root@back-1 'cd /opt/app/les-indecis-server ; git pull ;'
-    - ssh root@back-2 'cd /opt/app/les-indecis-server ; git pull ;'
 
 job kill_old:
   stage: kill

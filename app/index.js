@@ -27,7 +27,7 @@ app.get('/get_notifications', (req, res) => {
 });
 
 // Url shortening, POST /shorten
-app.post('/add_notification', (req, res, next) {
+app.post('/add_notification', (req, res, next) => {
 	var msg = decodeURIComponent(req.body.msg) ;
 	var planned_at = decodeURIComponent(req.body.planned) ;
 	pool.query("SELECT MAX(ID) AS mid FROM notification;", (err, r) => {

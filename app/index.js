@@ -49,10 +49,10 @@ app.post('/add_notification', (req, res, next) => {
 app.get('/get_spots', (req, res) => {
 	var longitude = "";
 	var latitude = "";
-	if(req.body.hasAttribute(longitude) && req.body.hasAttribute(latitude)){
-        longitude = decodeURIComponent(req.body.longitude);
-        latitude = decodeURIComponent(req.body.latitude);
-	}
+//	if(req.body.hasAttribute(longitude) && req.body.hasAttribute(latitude)){
+//        longitude = decodeURIComponent(req.body.longitude);
+//        latitude = decodeURIComponent(req.body.latitude);
+//	}
 
 	//if there are no coordinates, return all spots, otherwise return spots around coordinates
 	var request = "SELECT id,longitude,latitude,capacity,occupancy,designation,city FROM parking_spots";

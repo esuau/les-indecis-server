@@ -3,12 +3,15 @@ const express = require('express');
 const morgan = require('morgan');
 const pg = require('pg');
 const pool = new pg.Pool({
-user: 'postgres',
-host: 'bdd-vip.undefined.inside.esiag.info',
-database: 'pds',
-password: 'undefined',
-port: '5432'});
+	user: 'postgres',
+	host: 'bdd-vip.undefined.inside.esiag.info',
+	database: 'pds',
+	password: 'undefined',
+	port: '5432'
+});
 const request = require('request');
+const pdfInvoice = require('pdf-invoice');
+const fs = require('fs');
 
 const app = express();
 app.use(morgan('combined'));
@@ -70,6 +73,29 @@ app.get('/get_spots', (req, res) => {
             res.send(r.rows);
         }
     });
+});
+
+// Request to trigger the generation of invoices.
+app.get('/generate_invoice', (req, res) => {
+	const document = pdfInvoice({
+		company: {
+			phone: '(99) 9 9999-9999',
+			email: 'company@evilcorp.com',
+			address: 'Av. Companhia, 182, Água Branca, Piauí',
+			name: 'Evil Corp.',
+		},
+		customer: {
+			name: 'Elliot Raque',
+			email: 'raque@gmail.com',
+		},
+		items: [
+			{amount: 50.0, name: 'XYZ', description: 'Lorem ipsum dollor sit amet', quantity: 12},
+			{amount: 12.0, name: 'ABC', description: 'Lorem ipsum dollor sit amet', quantity: 12},
+			{amount: 127.72, name: 'DFE', description: 'Lorem ipsum dollor sit amet', quantity: 12},
+		],
+	});
+	document.generate();
+	document.pdfkitDoc.pipe(fs.createWriteStream('file.pdf'))
 });
 
 var listener = app.listen(process.env.PORT || 80, function() {

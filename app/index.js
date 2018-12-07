@@ -119,5 +119,18 @@ cron.schedule('* * * * *', () => {
 	request('http://api.undefined.inside.esiag.info/get_msg?queue=test', { json: false }, (err, res, body) => {
 		if (err) { return console.log(err); }
 		console.log(body);
+		pool.query("SELECT MAX(ID) AS mid FROM notification;", (err, r) => {
+		if(err) { res.send("Error while reading id from DB : " + err); }
+		else 
+		{
+			var id = r.rows[0].mid + 1 ;
+			pool.query("INSERT INTO notification VALUES (" + id + ", '" + msg + "', NOW(), '"+planned_at+"', '##') ;", (err, r) => {
+				if(err) { res.send("Error while adding notification in DB : " + err); }
+				else {
+					res.send("Notification ajoutée avec succés !");
+				}
+			});
+		}
+	});
 	});
 });

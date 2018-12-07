@@ -11,7 +11,7 @@ const pool = new pg.Pool({
 });
 const request = require('request');
 const pdfInvoice = require('pdf-invoice');
-const fs = require('fs');
+const client = require('scp2');
 
 const app = express();
 app.use(morgan('combined'));
@@ -95,7 +95,8 @@ app.get('/generate_invoice', (req, res) => {
 		],
 	});
 	document.generate();
-	document.pdfkitDoc.pipe(fs.createWriteStream('file.pdf'))
+	document.pdfkitDoc.pipe(client.scp('file.pdf', 'root:undefined@192.168.100.9:/shared/bill/', function(err) { console.log(err) }));
+	res.send(true);
 });
 
 var listener = app.listen(process.env.PORT || 80, function() {

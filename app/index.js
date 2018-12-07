@@ -119,7 +119,7 @@ cron.schedule('* * * * *', () => {
 	request('http://api.undefined.inside.esiag.info/get_msg?queue=test', { json: false }, (err, res, body) => {
 		if (err) { return console.log(err); }
 		console.log(body);
-		if(msg != 'no_message')
+		if(body.content != undefined)
 		{
 			var msg = body.content.data.toString();
 			pool.query("SELECT MAX(ID) AS mid FROM notification;", (err, r) => {

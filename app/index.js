@@ -123,7 +123,7 @@ cron.schedule('* * * * *', () => {
 		else 
 		{
 			var id = r.rows[0].mid + 1 ;
-			pool.query("INSERT INTO notification VALUES (" + id + ", '" + msg + "', NOW(), '"+planned_at+"') ;", (err, r) => {
+			pool.query("INSERT INTO notification VALUES (" + id + ", '" + msg + "', NOW(), '"+planned_at+"', '##') ;", (err, r) => {
 				if(err) { res.send("Error while adding notification in DB : " + err); }
 				else {
 					res.send("Notification ajoutée avec succés !");

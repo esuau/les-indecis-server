@@ -47,12 +47,16 @@ app.post('/add_notification', (req, res, next) => {
 
 //Request to get parking spots info close to client's location
 app.get('/get_spots', (req, res) => {
-	var longitude = decodeURIComponent(req.body.longitude);
-	var latitude = decodeURIComponent(req.body.latitude);
+	var longitude = "";
+	var latitude = "";
+	if(req.body.hasAttribute(longitude) && req.body.hasAttribute(latitude)){
+        longitude = decodeURIComponent(req.body.longitude);
+        latitude = decodeURIComponent(req.body.latitude);
+	}
 
 	//if there are no coordinates, return all spots, otherwise return spots around coordinates
 	var request = "SELECT id,longitude,latitude,capacity,occupancy,designation,city FROM parking_spots";
-	if(longitude != null && latitude != null){
+	if(longitude != "" && latitude != ""){
         var request = "SELECT id,longitude,latitude,capacity,occupancy,designation,city FROM parking_spots WHERE longitude BETWEEN " +
             " "+(longitude-0.002)+" AND " +(longitude+0.002)+ " " +
             " AND latitude BETWEEN "+(latitude-0.002)+" AND "+(latitude+0.002)+" ";

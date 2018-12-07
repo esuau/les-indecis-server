@@ -1,3 +1,4 @@
+const cron = require('node-cron');
 const express = require('express');
 const morgan = require('morgan');
 const pg = require('pg');
@@ -7,6 +8,7 @@ host: 'bdd-vip.undefined.inside.esiag.info',
 database: 'pds',
 password: 'undefined',
 port: '5432'});
+const request = require('request');
 
 const app = express();
 app.use(morgan('combined'));
@@ -59,4 +61,11 @@ process.once('SIGINT', function (code) {
 process.once('SIGTERM', function (code) {
 	console.log('SIGTERM received terminating pgdb connection');
     pool.close();
+});
+
+cron.schedule('* * * * *', () => {
+	request('http://api.undefined.inside.esiag.info/get_msg?queue=test', { json: false }, (err, res, body) => {
+		if (err) { return console.log(err); }
+		console.log(body);
+	});
 });

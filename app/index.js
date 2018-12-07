@@ -45,6 +45,27 @@ app.post('/add_notification', (req, res, next) => {
 
 });
 
+//Request to get parking spots info close to client's location
+app.get('/get_spots', (req, res) => {
+	var longitude = decodeURIComponent(req.body.longitude);
+	var latitude = decodeURIComponent(req.body.latitude);
+
+	//if there are no coordinates, return all spots, otherwise return spots around coordinates
+	var request = "SELECT id,longitude,latitude,capacity,occupancy,designation,city FROM parking_spots";
+	if(longitude != null && latitude != null){
+        var request = "SELECT id,longitude,latitude,capacity,occupancy,designation,city FROM parking_spots WHERE longitude BETWEEN " +
+            " "+(longitude-0.002)+" AND " +(longitude+0.002)+ " " +
+            " AND latitude BETWEEN "+(latitude-0.002)+" AND "+(latitude+0.002)+" ";
+	}
+    pool.query(request, (err, r) => {
+        if(err) {res.send("Error while reading notifications from DB : " + err); }
+        else
+        {
+            res.send(r.rows);
+        }
+    });
+});
+
 var listener = app.listen(process.env.PORT || 80, function() {
  console.log('listening on port ' + listener.address().port);
 });

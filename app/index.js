@@ -12,9 +12,15 @@ const pool = new pg.Pool({
 const request = require('request');
 const pdfInvoice = require('pdf-invoice');
 const client = require('scp2');
+const fs = require('fs')
 
 const app = express();
+const bodyParser = require('body-parser');
 app.use(morgan('combined'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+	extended: true
+}));
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/heartbeat.json')
@@ -76,27 +82,25 @@ app.get('/get_spots', (req, res) => {
 });
 
 // Request to trigger the generation of invoices.
-app.get('/generate_invoice', (req, res) => {
+app.post('/generate_invoice', (req, res) => {
+	customer = req.body;
+	pdfInvoice.lang = 'en_US';
 	const document = pdfInvoice({
 		company: {
 			phone: '(99) 9 9999-9999',
-			email: 'company@evilcorp.com',
-			address: 'Av. Companhia, 182, Água Branca, Piauí',
-			name: 'Evil Corp.',
+			email: 'contact@undefined.com',
+			address: '71, Rue Saint Simon, 94000 Créteil',
+			name: 'Les Indécis',
 		},
 		customer: {
-			name: 'Elliot Raque',
-			email: 'raque@gmail.com',
+			name: customer.name,
+			email: customer.email,
 		},
-		items: [
-			{amount: 50.0, name: 'XYZ', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-			{amount: 12.0, name: 'ABC', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-			{amount: 127.72, name: 'DFE', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-		],
+		items: customer.items
 	});
 	document.generate();
-	document.pdfkitDoc.pipe(client.scp('file.pdf', 'root:undefined@192.168.100.9:/shared/bill/', function(err) { console.log(err) }));
-	res.send(true);
+	document.pdfkitDoc.pipe(fs.createWriteStream('file.pdf'));
+	res.send(200, {path: 'file.pdf'});
 });
 
 var listener = app.listen(process.env.PORT || 80, function() {

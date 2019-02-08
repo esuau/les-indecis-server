@@ -26,16 +26,12 @@ describe('API Cartography', function() {
       process.exit();
     })
 
-    it('responds to /get_spots and return JSON', function testGetSpots(done) {
-      this.timeout(100000);
+    it('Cartography - Responds to /get_spots and return JSON', function testGetSpots(done) {
+      this.timeout(10000);
     request(app)
       .get('/get_spots')
       .expect(200,{ "Content-Type": "application/json" }, done);
-
-      //spy.call(pool.query());
       return done();
     });
-    
-  });
 });
-
+});

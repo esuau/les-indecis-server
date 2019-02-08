@@ -13,8 +13,8 @@ job fetch_code:
 job kill_old:
   stage: kill
   script: 
-    - ssh root@back-1 'docker kill pds_server || exit 0 ;'
-    - ssh root@back-2 'docker kill pds_server || exit 0 ;'
+    - ssh root@back-1 'docker kill pds_server && docker container rm pds_server'
+    - ssh root@back-2 'docker kill pds_server && docker container rm pds_server'
   only:
     - master
 

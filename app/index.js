@@ -151,3 +151,5 @@ cron.schedule('* * * * *', () => {
 		};
 	});
 });
+
+module.exports=app;

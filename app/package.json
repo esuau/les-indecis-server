@@ -13,6 +13,14 @@
     "request": "^2.81.0",
     "scp2": "^0.5.0"
   },
-  "devDependencies": {},
-  "author": "Les Indécis"
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "sinon": "^7.2.3"
+  },
+  "author": "Les Indécis",
+  "test-unit": "NODE_ENV=test mocha '/**/*.spec.js'",
+  "scripts": {
+    "test": "/node_modules/mocha/bin/mocha"
+  }
 }

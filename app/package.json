@@ -19,8 +19,7 @@
     "sinon": "^7.2.3"
   },
   "author": "Les Indécis",
-  "test-unit": "NODE_ENV=test mocha '/**/*.spec.js'",
   "scripts": {
-    "test": "/node_modules/mocha/bin/mocha"
+    "test": "mocha"
   }
 }

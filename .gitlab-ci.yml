@@ -13,8 +13,8 @@ job fetch_code:
 job kill_old:
   stage: kill
   script: 
-    - ssh root@back-1 'p=$(docker ps | grep pds-server | cut -d" " -f1);docker kill $p || exit 0 ;'
-    - ssh root@back-2 'p=$(docker ps | grep pds-server | cut -d" " -f1);docker kill $p || exit 0 ;'
+    - ssh root@back-1 'docker kill pds_server || exit 0 ;'
+    - ssh root@back-2 'docker kill pds_server || exit 0 ;'
   only:
     - master
 
@@ -26,8 +26,8 @@ job build_new:
 
 job deploy_new:
   stage: deploy
-  script: 
-    - ssh root@back-1 'docker run -d -v /shared/bill:/usr/shared/bill -p 80:80 pds-server'
-    - ssh root@back-2 'docker run -d -v /shared/bill:/usr/shared/bill -p 80:80 pds-server'
+  script:
+    - ssh root@back-1 'docker run -d -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
+    - ssh root@back-2 'docker run -d -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
   only:
     - master

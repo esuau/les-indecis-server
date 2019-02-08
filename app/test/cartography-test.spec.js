@@ -4,6 +4,7 @@ var chai = require('chai');
 var chaiHttp = require('chai-http');
 var request = require('supertest');
 chai.use(chaiHttp);
+var spy = sinon.spy();
 
 
 // First test to see how to use Mocha
@@ -15,8 +16,6 @@ describe('Parameter  : Array', function() {
   });
 });
 
-
-
 describe('API Cartography', function() {
   describe('loading express', function () {
     var app;
@@ -27,14 +26,16 @@ describe('API Cartography', function() {
       process.exit();
     })
 
-
-    it('responds to /get_spots', function testGetSpots(done) {
-      this.timeout(15000);
+    it('responds to /get_spots and return JSON', function testGetSpots(done) {
+      this.timeout(100000);
     request(app)
       .get('/get_spots')
-      .expect(200, done);
+      .expect(200,{ "Content-Type": "application/json" }, done);
+
+      //spy.call(pool.query());
       return done();
     });
+    
   });
 });
 

@@ -14,9 +14,9 @@ job kill_old:
   stage: kill
   script: 
     - ssh root@back-1 'docker kill pds_server || exit 0'
-    - ssh root@back-1 'docker container rm pds_api || exit 0'
+    - ssh root@back-1 'docker container rm pds_server || exit 0'
     - ssh root@back-2 'docker kill pds_server || exit 0'
-    - ssh root@back-2 'docker container rm pds_api || exit 0'
+    - ssh root@back-2 'docker container rm pds_server || exit 0'
   only:
     - master
 

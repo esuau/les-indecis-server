@@ -1,8 +1,8 @@
 stages:
   - fetch
   - build
-  - kill
-  - deploy
+  - deploy_1
+  - deploy_2
 
 job fetch_code:
   stage: fetch
@@ -10,26 +10,26 @@ job fetch_code:
     - ssh root@back-1 'cd /opt/app/les-indecis-server ; git pull ;'
     - ssh root@back-2 'cd /opt/app/les-indecis-server ; git pull ;'
 
-job kill_old:
-  stage: kill
-  script: 
-    - ssh root@back-1 'docker kill pds_server || exit 0'
-    - ssh root@back-1 'docker container rm pds_server || exit 0'
-    - ssh root@back-2 'docker kill pds_server || exit 0'
-    - ssh root@back-2 'docker container rm pds_server || exit 0'
-  only:
-    - master
-
 job build_new:
   stage: build
   script: 
     - ssh root@back-1 'cd /opt/app/les-indecis-server && docker build -t pds-server .'
     - ssh root@back-2 'cd /opt/app/les-indecis-server && docker build -t pds-server .'
 
-job deploy_new:
-  stage: deploy
+job deploy_01:
+  stage: deploy_1
   script:
+    - ssh root@back-1 'docker kill pds_server || exit 0'
+    - ssh root@back-1 'docker container rm pds_server || exit 0'
     - ssh root@back-1 'docker run -d --privileged -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
+  only:
+    - master
+
+job deploy_02:
+  stage: deploy_2
+  script:
+    - ssh root@back-2 'docker kill pds_server || exit 0'
+    - ssh root@back-2 'docker container rm pds_server || exit 0'
     - ssh root@back-2 'docker run -d --privileged -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
   only:
     - master

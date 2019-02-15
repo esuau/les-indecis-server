@@ -21,7 +21,7 @@ job deploy_01:
   script:
     - ssh root@back-1 'docker kill pds_server || exit 0'
     - ssh root@back-1 'docker container rm pds_server || exit 0'
-    - ssh root@back-1 'docker run -d --privileged -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
+    - ssh root@back-1 'docker run -d --privileged --volume-driver=nfs -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
   only:
     - master
 
@@ -30,6 +30,6 @@ job deploy_02:
   script:
     - ssh root@back-2 'docker kill pds_server || exit 0'
     - ssh root@back-2 'docker container rm pds_server || exit 0'
-    - ssh root@back-2 'docker run -d --privileged -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
+    - ssh root@back-2 'docker run -d --privileged --volume-driver=nfs -v /shared/bill:/usr/shared/bill -p 80:80 --name pds_server pds-server'
   only:
     - master

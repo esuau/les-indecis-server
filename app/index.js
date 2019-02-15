@@ -4,7 +4,7 @@ const morgan = require('morgan');
 const pg = require('pg');
 const pool = new pg.Pool({
 	user: 'postgres',
-	host: 'bdd-vip.undefined.inside.esiag.info',
+	host: 'bdd.undefined.inside.esiag.info',
 	database: 'pds',
 	password: 'undefined',
 	port: '5432'
@@ -112,7 +112,7 @@ app.get('/generate_invoice', (req, res) => {
 				});
 				document.generate();
 				now = new Date();
-				fileName = '/usr/shared/bill'
+				fileName = '/usr/shared/bill/'
 					+ now.getFullYear()
 					+ (now.getMonth() + 1)
 					+ now.getDate()

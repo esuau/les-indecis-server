@@ -4,17 +4,22 @@ const morgan = require('morgan');
 const pg = require('pg');
 const pool = new pg.Pool({
 	user: 'postgres',
-	host: 'bdd-vip.undefined.inside.esiag.info',
+	host: 'bdd.undefined.inside.esiag.info',
 	database: 'pds',
 	password: 'undefined',
 	port: '5432'
 });
 const request = require('request');
 const pdfInvoice = require('pdf-invoice');
-const client = require('scp2');
+const fs = require('fs')
 
 const app = express();
+const bodyParser = require('body-parser');
 app.use(morgan('combined'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+	extended: true
+}));
 
 app.get('/', (req, res) => {
 	res.sendFile(__dirname + '/heartbeat.json')
@@ -89,26 +94,58 @@ app.get('/get_macs', (req, res) => {
 
 // Request to trigger the generation of invoices.
 app.get('/generate_invoice', (req, res) => {
-	const document = pdfInvoice({
-		company: {
-			phone: '(99) 9 9999-9999',
-			email: 'company@evilcorp.com',
-			address: 'Av. Companhia, 182, Água Branca, Piauí',
-			name: 'Evil Corp.',
-		},
-		customer: {
-			name: 'Elliot Raque',
-			email: 'raque@gmail.com',
-		},
-		items: [
-			{amount: 50.0, name: 'XYZ', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-			{amount: 12.0, name: 'ABC', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-			{amount: 127.72, name: 'DFE', description: 'Lorem ipsum dollor sit amet', quantity: 12},
-		],
+	paths = [];
+	pool.query(`SELECT b.bill_id, a.firstname, a.lastname, a.email, b.totalprice, h.vehicle, h.description
+			    FROM bill b, account a, historic h
+	            LEFT JOIN account a2 on h.account_id = a2.user_id
+	            LEFT JOIN bill b2 on h.historic_id = b2.historic_id
+	            WHERE b.notification_status = 'pending';`, (err, r) => {
+		if(err) {
+			res.send(500, "Error while reading notifications from DB : " + err);
+		} else {
+			r.rows.forEach(element => {
+				pdfInvoice.lang = 'en_US';
+				const document = pdfInvoice({
+					company: {
+						phone: '(99) 9 9999-9999',
+						email: 'contact@undefined.com',
+						address: '71, Rue Saint Simon, 94000 Créteil',
+						name: 'Les Indécis',
+					},
+					customer: {
+						name: element.firstname + ' ' + element.lastname,
+						email: element.email
+					},
+					items: [{
+						amount: element.totalprice,
+						name: element.vehicle,
+						description: element.description
+					}]
+				});
+				document.generate();
+				now = new Date();
+				fileName = '/usr/shared/bill/'
+					+ now.getFullYear()
+					+ (now.getMonth() + 1)
+					+ now.getDate()
+					+ now.getHours()
+					+ now.getMinutes()
+					+ now.getSeconds()
+					+ now.getMilliseconds()
+					+ '.pdf';
+				document.pdfkitDoc.pipe(fs.createWriteStream(fileName));
+				console.log(element);
+				console.log(fileName);
+				paths.push({ path: fileName });
+				pool.query("UPDATE bill SET notification_status = 'created' WHERE bill_id = " + element.bill_id + " ;", (eerr, u) => {
+					if (eerr) {
+						res.status(500).send("Could not update notification status: " + eerr);
+					}
+				});
+			});
+			res.status(200).send({ paths: paths });
+		}
 	});
-	document.generate();
-	document.pdfkitDoc.pipe(client.scp('file.pdf', 'root:undefined@192.168.100.9:/shared/bill/', function(err) { console.log(err) }));
-	res.send(true);
 });
 
 var listener = app.listen(process.env.PORT || 80, function() {
@@ -166,3 +203,5 @@ cron.schedule('* * * * *', () => {
 		}
 	});
 });
+
+module.exports=app;

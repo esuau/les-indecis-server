@@ -1,0 +1,136 @@
+swagger: "2.0"
+info:
+  description: "API node.js in backend of the company."
+  version: "1.0.0"
+  title: "Backend API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "quentin.goutte@etu.u-pec.fr"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "undefined.inside.esiag.info"
+basePath: "/" 
+tags:
+- name: "Parking"
+  description: "Everything about a parking"
+- name: "Location"
+  description: "Latitude and longitude"
+- name: "Address"
+  description: "Field linked to an address"
+schemes:
+- "https"
+- "http"
+paths:
+  /getspots:
+    get:
+      tags:
+      - "parking"
+      summary: "Get all parking spot in database"
+      description: ""
+      operationId: "getSpots"
+      produces:
+      - "application/xml"
+      - "application/json"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Parking"
+  /getspots/{latitude}&{longitude}:
+    get:
+      tags:
+      - "parking"
+      summary: "Get all parking spot near of the location"
+      description: ""
+      operationId: "findParkingByLocation"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "latitude"
+        in: "path"
+        description: "Latitude value that need to be considered for filter"
+        required: true
+        type: "string"
+      - name: "longitude"
+        in: "path"
+        description: "Longitude value that need to be considered for filter"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Parking"
+        400:
+          description: "Invalid longitude or latitude value"
+  /getspot/{id}:
+    get:
+      tags:
+      - "parking"
+      summary: "Get one parking with is id"
+      description: ""
+      operationId: "findParkingById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description : "Id value that need to be considered for filter"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/Parking"
+        400:
+          description: "Invalid longitude or latitude value"
+definitions:
+  Parking:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      designation :
+        type: "string"
+        description: "Parking's name"
+      longitude:
+        type: "string"
+        description: "Parking's longitude"
+      latitude:
+        type: "string"
+        description: "Parking's latitude"
+      occupancy:
+        type: "integer"
+        format: "int64"
+        description: "Parking's occupancy"
+      city:
+        type: "string"
+        description: "Parking's city"
+      capacity:
+        type: "integer"
+        format: "int64"
+        description: "Number of parking places"
+    xml:
+      name: "Parking"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

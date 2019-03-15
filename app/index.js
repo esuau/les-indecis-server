@@ -76,13 +76,29 @@ app.get('/get_spots', (req, res) => {
     });
 });
 
-//Request to get parking spots info close to client's location
+//Request to get authorized MAC adresses
 app.get('/get_macs', (req, res) => {
 	var longitude = "";
 	var latitude = "";
 
 	//if there are no coordinates, return all spots, otherwise return spots around coordinates
 	var request = "SELECT * FROM authorized_addresses ;";
+    pool.query(request, (err, r) => {
+        if(err) {res.send("Error while reading notifications from DB : " + err); }
+        else
+        {
+            res.send(r.rows);
+        }
+    });
+});
+
+//Request to get vehicles
+app.get('/get_vehicles', (req, res) => {
+	var longitude = "";
+	var latitude = "";
+
+	//if there are no coordinates, return all spots, otherwise return spots around coordinates
+	var request = "SELECT * FROM vehicules ;";
     pool.query(request, (err, r) => {
         if(err) {res.send("Error while reading notifications from DB : " + err); }
         else

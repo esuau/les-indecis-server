@@ -54,10 +54,6 @@ app.post('/add_notification', (req, res, next) => {
 app.get('/get_spots', (req, res) => {
 	var longitude = "";
 	var latitude = "";
-//	if(req.body.hasAttribute(longitude) && req.body.hasAttribute(latitude)){
-//        longitude = decodeURIComponent(req.body.longitude);
-//        latitude = decodeURIComponent(req.body.latitude);
-//	}
 
 	//if there are no coordinates, return all spots, otherwise return spots around coordinates
 	var request = "SELECT id,longitude,latitude,capacity,occupancy,designation,city FROM parking_spots";
@@ -66,6 +62,22 @@ app.get('/get_spots', (req, res) => {
             " "+(longitude-0.002)+" AND " +(longitude+0.002)+ " " +
             " AND latitude BETWEEN "+(latitude-0.002)+" AND "+(latitude+0.002)+" ";
 	}
+    pool.query(request, (err, r) => {
+        if(err) {res.send("Error while reading notifications from DB : " + err); }
+        else
+        {
+            res.send(r.rows);
+        }
+    });
+});
+
+//Request to get parking spots info close to client's location
+app.get('/get_macs', (req, res) => {
+	var longitude = "";
+	var latitude = "";
+
+	//if there are no coordinates, return all spots, otherwise return spots around coordinates
+	var request = "SELECT * FROM authorized_addresses ;";
     pool.query(request, (err, r) => {
         if(err) {res.send("Error while reading notifications from DB : " + err); }
         else
@@ -134,7 +146,23 @@ cron.schedule('* * * * *', () => {
 						}
 					});
 				}
-			})
+			});
 		};
+	});
+});
+
+cron.schedule('* * * * *', () => {
+	var today=new Date(Date.now()).toLocaleString();
+	while(today.indexOf("/") != -1) { today = today.replace("/","-"); }
+	today = today.split(" ")[0]
+	var tab = today.split("-");
+	today = ""+tab[2]+"-"+tab[1]+"-"+tab[0];
+	
+	pool.query("SELECT * FROM notification WHERE planned_at::text LIKE '"+ today+"%' ;", (err, r) => {
+		if(err) { res.send("Error while reading id from DB : " + err); }
+		else 
+		{
+			
+		}
 	});
 });

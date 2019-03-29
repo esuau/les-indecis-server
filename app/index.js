@@ -82,7 +82,7 @@ app.get('/get_macs', (req, res) => {
 	var latitude = "";
 
 	//if there are no coordinates, return all spots, otherwise return spots around coordinates
-	var request = "SELECT * FROM authorized_addresses ;";
+	var request = "SELECT address FROM authorized_addresses ;";
     pool.query(request, (err, r) => {
         if(err) {res.send("Error while reading notifications from DB : " + err); }
         else

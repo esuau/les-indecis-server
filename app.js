@@ -7,6 +7,17 @@ var logger = require('morgan');
 const cron = require('node-cron');
 const request = require('request');
 
+const helper = require('./util/helper');
+const config = helper.readConfig('./conf/config.json');
+const pg = require('pg');
+const pool = new pg.Pool({
+  user: config.psql.user,
+  host: config.psql.host,
+  database: config.psql.database,
+  password: config.psql.password,
+  port: config.psql.port
+});
+
 var heartbeatRouter = require('./routes/heartbeat');
 var getNotificationsRouter = require('./routes/get-notifications');
 var addNotificationsRouter = require('./routes/add-notifications');
@@ -60,13 +71,13 @@ cron.schedule('* * * * *', () => {
   while (today.indexOf('/') != -1) {
     today = today.replace('/', '-');
   }
-  today = today.split(' ')[0]
+  today = today.split(' ')[0];
   var tab = today.split('-');
   today = '' + tab[2] + '-' + tab[1] + '-' + tab[0];
 
   pool.query("SELECT * FROM notification WHERE planned_at::text LIKE '" + today + "%' ;", (err, r) => {
     if (err) {
-      res.status(500).json({message: 'Error while reading id from DB : ' + err});
+      console.error('Error while reading id from DB : ' + err);
     }
   });
 });

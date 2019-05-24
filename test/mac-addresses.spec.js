@@ -11,11 +11,12 @@ describe('Mac addresses', () => {
       .get('/get_macs')
       .end((err, res) => {
         expect(res).to.have.status(200);
-        // var l = JSON.parse(res.text);
-        // l.forEach(function (e) {
-        //   assert(e.address != undefined);
-        // });
-        expect(res.text).to.equal('Notification ajoutée avec succès !');
+        var addresses = res.body;
+        expect(addresses).to.be.an('array');
+        expect(addresses.length).to.be.above(0);
+        addresses.forEach(value => {
+          expect(value.address).not.to.be.null;
+        });
         done();
       });
   });
